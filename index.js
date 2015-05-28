@@ -3,15 +3,28 @@ new function() {
 	var connected = false;
 
 	var serverUrl;
+	var cookieName;
+	var cookieValue;
+
 	var connectionStatus;
 	var sendMessage;
-	
+
 	var connectButton;
-	var disconnectButton; 
+	var disconnectButton;
 	var sendButton;
 
 	var open = function() {
 		var url = serverUrl.val();
+
+		var l = document.createElement("a");
+		l.href = url;
+		var hostname = l.hostname
+
+		chrome.cookies.set({
+			"url": "http://" + l.hostname,
+			"name": cookieName.val(),
+			"value": cookieValue.val(),
+		})
 		ws = new WebSocket(url);
 		ws.onopen = onOpen;
 		ws.onclose = onClose;
@@ -23,7 +36,7 @@ new function() {
 		connectButton.hide();
 		disconnectButton.show();
 	}
-	
+
 	var close = function() {
 		if (ws) {
 			console.log('CLOSING ...');
@@ -38,11 +51,11 @@ new function() {
 		sendMessage.attr('disabled', 'disabled');
 		sendButton.attr('disabled', 'disabled');
 	}
-	
+
 	var clearLog = function() {
 		$('#messages').html('');
 	}
-	
+
 	var onOpen = function() {
 		console.log('OPENED: ' + serverUrl.val());
 		connected = true;
@@ -50,21 +63,21 @@ new function() {
 		sendMessage.removeAttr('disabled');
 		sendButton.removeAttr('disabled');
 	};
-	
+
 	var onClose = function() {
 		console.log('CLOSED: ' + serverUrl.val());
 		ws = null;
 	};
-	
+
 	var onMessage = function(event) {
 		var data = event.data;
 		addMessage(data);
 	};
-	
+
 	var onError = function(event) {
 		alert(event.data);
 	}
-	
+
 	var addMessage = function(data, type) {
 		var msg = $('<pre>').text(data);
 		if (type === 'SENT') {
@@ -72,7 +85,7 @@ new function() {
 		}
 		var messages = $('#messages');
 		messages.append(msg);
-		
+
 		var msgBox = messages.get(0);
 		while (msgBox.childNodes.length > 1000) {
 			msgBox.removeChild(msgBox.firstChild);
@@ -83,32 +96,34 @@ new function() {
 	WebSocketClient = {
 		init: function() {
 			serverUrl = $('#serverUrl');
+			cookieName = $('#cookieName');
+			cookieValue = $('#cookieValue');
 			connectionStatus = $('#connectionStatus');
 			sendMessage = $('#sendMessage');
-			
+
 			connectButton = $('#connectButton');
-			disconnectButton = $('#disconnectButton'); 
+			disconnectButton = $('#disconnectButton');
 			sendButton = $('#sendButton');
-			
+
 			connectButton.click(function(e) {
 				close();
 				open();
 			});
-		
+
 			disconnectButton.click(function(e) {
 				close();
 			});
-			
+
 			sendButton.click(function(e) {
 				var msg = $('#sendMessage').val();
 				addMessage(msg, 'SENT');
 				ws.send(msg);
 			});
-			
+
 			$('#clearMessage').click(function(e) {
 				clearLog();
 			});
-			
+
 			var isCtrl;
 			sendMessage.keyup(function (e) {
 				if(e.which == 17) isCtrl=false;

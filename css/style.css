@@ -33,7 +33,19 @@ label {
 }
 
 #serverUrl {
-	width: 225px;
+	width: 262px;
+	padding: 1px 3px;
+	border: 1px solid #999;
+}
+
+#cookieName {
+	width: 250px;
+	padding: 1px 3px;
+	border: 1px solid #999;
+}
+
+#cookieValue {
+	width: 250px;
 	padding: 1px 3px;
 	border: 1px solid #999;
 }

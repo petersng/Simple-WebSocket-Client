@@ -20,5 +20,10 @@
     "scripts": [ "background.js" ]
   },
 
-  "permissions": [ "tabs" ]
+  "permissions": [
+    "tabs",
+    "cookies",
+    "http://*/*",
+    "https://*/*"
+  ]
 }
